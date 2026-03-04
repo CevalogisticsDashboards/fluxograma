@@ -3,518 +3,567 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fluxograma – Chatbot App</title>
+<title>Fluxograma – Forms → Excel → OS</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Sans:wght@400;500;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Kalam:wght@300;400;700&display=swap');
 
   :root {
-    --paper:#faf6ef; --ink:#1a1a2e;
-    --blue:#2563eb; --green:#16a34a; --orange:#d97706;
-    --red:#dc2626; --purple:#7c3aed; --teal:#0891b2;
-    --supabase:#3ecf8e; --gemini:#4285f4; --admin:#b45309;
-  }
-  *{margin:0;padding:0;box-sizing:border-box;}
-  body{
-    background:#e8e0d0;
-    font-family:'DM Sans',sans-serif;
-    padding:60px 20px 48px;
-    min-width:1200px;
+    --paper: #faf6ef;
+    --ink: #1a1a2e;
+    --accent1: #2563eb;
+    --accent2: #16a34a;
+    --accent3: #dc2626;
+    --accent4: #d97706;
+    --accent5: #7c3aed;
+    --line: #374151;
   }
 
-  /* ── ZOOM CONTROL ── */
-  .zoom-ctrl {
-    position:fixed; top:18px; left:18px; z-index:9999;
-    display:flex; align-items:center;
-    background:#fff; border:1.5px solid #d1d5db;
-    border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.12);
-    overflow:hidden; font-family:'DM Sans',sans-serif; user-select:none;
-  }
-  .zoom-ctrl button {
-    background:none; border:none; width:34px; height:34px;
-    font-size:18px; cursor:pointer; color:#374151;
-    display:flex; align-items:center; justify-content:center;
-    transition:background .15s;
-  }
-  .zoom-ctrl button:hover{background:#f3f4f6;}
-  .zoom-ctrl button:active{background:#e5e7eb;}
-  .zoom-ctrl .z-sep{width:1px;height:22px;background:#d1d5db;}
-  .zoom-ctrl .z-val{min-width:52px;text-align:center;font-size:13px;font-weight:600;color:#1f2937;}
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  /* ── PAGE ── */
-  .page{
-    background:var(--paper); padding:44px 52px 56px;
-    position:relative;
-    box-shadow:2px 2px 0 #c9bfb0,4px 4px 0 #b8ae9f,6px 6px 14px rgba(0,0,0,.25);
-    border-radius:2px;
-  }
-  .page::before{
-    content:'';position:absolute;inset:0;
-    background-image:repeating-linear-gradient(transparent,transparent 31px,#ddd8ce 31px,#ddd8ce 32px);
-    border-radius:2px;pointer-events:none;opacity:.4;
+  body {
+    background: #e8e0d0;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    padding: 32px 16px;
+    font-family: 'Caveat', cursive;
   }
 
-  /* ── TITLE ── */
-  .title{text-align:center;margin-bottom:32px;position:relative;z-index:1;}
-  .title h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:700;color:var(--ink);}
-  .title p{font-size:13px;color:#666;margin-top:3px;}
-  .tline{width:260px;height:3px;background:var(--blue);margin:8px auto 0;border-radius:2px;}
-  .tline::after{content:'';display:block;width:180px;height:2px;background:var(--orange);margin:5px auto 0;border-radius:2px;}
-
-  /* ── STAMP ── */
-  .stamp{
-    position:absolute;top:40px;right:52px;width:86px;height:86px;
-    border:3px solid rgba(37,99,235,.4);border-radius:50%;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    transform:rotate(10deg);color:rgba(37,99,235,.4);
-    font-family:'Plus Jakarta Sans',sans-serif;font-size:9.5px;font-weight:700;
-    text-align:center;letter-spacing:.5px;text-transform:uppercase;pointer-events:none;
+  .page {
+    background: var(--paper);
+    width: 780px;
+    padding: 48px 52px 60px;
+    position: relative;
+    box-shadow:
+      2px 2px 0 #c9bfb0,
+      4px 4px 0 #b8ae9f,
+      6px 6px 12px rgba(0,0,0,.25);
+    border-radius: 2px;
   }
-  .stamp::before{content:'';position:absolute;inset:4px;border:1.5px solid rgba(37,99,235,.22);border-radius:50%;}
 
-  /* ── INFRA CARDS ── */
-  .infra-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:28px;position:relative;z-index:1;}
-
-  .supa-card{
-    border:2.5px solid var(--supabase);border-radius:12px;
-    background:linear-gradient(135deg,#f0fdf4,#ecfdf5);
-    padding:14px 16px;
+  /* Lined paper effect */
+  .page::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: repeating-linear-gradient(
+      transparent,
+      transparent 31px,
+      #ddd8ce 31px,
+      #ddd8ce 32px
+    );
+    border-radius: 2px;
+    pointer-events: none;
+    opacity: .5;
   }
-  .supa-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:#059669;margin-bottom:6px;}
-  .supa-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px;}
-  .supa-item{border:1.5px solid #6ee7b7;border-radius:7px;background:white;padding:7px 9px;font-size:11.5px;color:#065f46;}
-  .supa-item strong{display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:#059669;}
 
-  .sec-block{margin-top:10px;border-top:1.5px dashed #6ee7b7;padding-top:8px;}
-  .sec-block-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:11.5px;font-weight:700;color:#065f46;margin-bottom:5px;display:flex;align-items:center;gap:6px;}
-  .rls-badge{background:#059669;color:white;font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:20px;letter-spacing:.3px;}
-  .sec-block ul{list-style:none;padding:0;}
-  .sec-block ul li{font-size:11.5px;color:#047857;padding:2px 0 2px 20px;position:relative;line-height:1.45;}
-  .sec-block ul li::before{content:'✅';position:absolute;left:0;font-size:10px;top:3px;}
-
-  .gem-card{
-    border:2.5px solid var(--gemini);border-radius:12px;
-    background:linear-gradient(135deg,#eff6ff,#dbeafe);
-    padding:14px 16px;
+  /* Red margin line */
+  .page::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 72px;
+    width: 1.5px;
+    background: rgba(220,38,38,.25);
+    pointer-events: none;
   }
-  .gem-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:15px;font-weight:700;color:var(--gemini);margin-bottom:6px;}
-  .gem-url{font-size:10.5px;color:#1e40af;word-break:break-all;background:#e0e7ff;padding:4px 6px;border-radius:4px;border:1px solid #a5b4fc;margin:4px 0;font-family:monospace;}
-  .gem-warn{font-size:11px;color:#d97706;background:#fef3c7;padding:4px 7px;border-radius:4px;border:1px solid #fcd34d;margin-top:6px;}
 
-  /* ── THREE-LANE ── */
-  .main-grid{display:grid;grid-template-columns:1fr 52px 1fr 52px 1fr;gap:0;position:relative;z-index:1;align-items:start;}
-
-  .col-label{text-align:center;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;padding:6px 0 16px;border-bottom:2px dashed;margin-bottom:18px;}
-  .col-label.user  {color:var(--blue);  border-color:var(--blue);}
-  .col-label.ai    {color:var(--purple);border-color:var(--purple);}
-  .col-label.admin {color:var(--admin); border-color:var(--admin);}
-
-  .lane{display:flex;flex-direction:column;align-items:center;padding:0 6px;}
-
-  /* ── BOX ── */
-  .box{
-    border:2.5px solid var(--ink);border-radius:10px;
-    padding:12px 16px 12px 24px;width:100%;background:white;
-    position:relative;transition:transform .2s,box-shadow .2s;
-    animation:pop .4s cubic-bezier(.34,1.56,.64,1) both;
+  .title {
+    text-align: center;
+    margin-bottom: 36px;
+    position: relative;
+    z-index: 1;
   }
-  .box:hover{transform:translateY(-2px) rotate(.2deg);box-shadow:4px 5px 0 rgba(0,0,0,.1);}
-  .box::before{content:'';position:absolute;inset:0;border-radius:10px;border:1.5px solid var(--ink);transform:translate(4px,4px);z-index:-1;opacity:.1;}
-  .stripe{position:absolute;left:0;top:0;bottom:0;width:6px;border-radius:8px 0 0 8px;}
-  .box-header{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
-  .icon{font-size:20px;line-height:1;flex-shrink:0;}
-  .bttl{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:700;}
-  .bbody{font-size:12px;color:#444;line-height:1.5;padding-left:28px;}
-  .bbody li{list-style:none;position:relative;padding-left:16px;}
-  .bbody li::before{content:'→';position:absolute;left:0;color:#aaa;}
 
-  .c-blue  {border-color:var(--blue);}  .c-blue  .stripe{background:var(--blue);}  .c-blue  .bttl{color:var(--blue);}
-  .c-green {border-color:var(--green);} .c-green .stripe{background:var(--green);} .c-green .bttl{color:var(--green);}
-  .c-orange{border-color:var(--orange);}.c-orange .stripe{background:var(--orange);}.c-orange .bttl{color:var(--orange);}
-  .c-purple{border-color:var(--purple);}.c-purple .stripe{background:var(--purple);}.c-purple .bttl{color:var(--purple);}
-  .c-supa  {border-color:var(--supabase);}.c-supa .stripe{background:var(--supabase);}.c-supa .bttl{color:#059669;}
-  .c-admin {border-color:var(--admin);}  .c-admin .stripe{background:var(--admin);}  .c-admin .bttl{color:var(--admin);}
-  .c-green-plain{border-color:var(--green);}.c-green-plain .stripe{background:var(--green);}.c-green-plain .bttl{color:var(--green);}
+  .title h1 {
+    font-family: 'Kalam', cursive;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--ink);
+    line-height: 1.2;
+  }
 
-  .badge{display:inline-block;font-size:10px;font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;padding:1px 7px;border-radius:20px;margin-bottom:3px;letter-spacing:.3px;text-transform:uppercase;}
-  .b-auth{background:#dbeafe;color:#1e40af;border:1px solid #93c5fd;}
-  .b-proc{background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
-  .b-ai  {background:#ede9fe;color:#5b21b6;border:1px solid #c4b5fd;}
-  .b-out {background:#dcfce7;color:#166534;border:1px solid #86efac;}
-  .b-db  {background:#d1fae5;color:#065f46;border:1px solid #6ee7b7;}
-  .b-adm {background:#fef3c7;color:#92400e;border:1px solid #fcd34d;}
+  .title p {
+    font-size: 16px;
+    color: #555;
+    margin-top: 4px;
+  }
 
-  /* ── ARROWS ── */
-  .arr{display:flex;flex-direction:column;align-items:center;height:44px;position:relative;}
-  .arr-line{width:2.5px;flex:1;background:repeating-linear-gradient(to bottom,var(--ink) 0,var(--ink) 6px,transparent 6px,transparent 12px);}
-  .arr-head{width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:10px solid var(--ink);}
-  .arr-lbl{position:absolute;top:50%;transform:translateY(-50%);left:calc(50% + 12px);font-size:10px;color:#666;white-space:nowrap;background:var(--paper);padding:1px 4px;border-radius:3px;border:1px dashed #bbb;}
+  .title-underline {
+    width: 200px;
+    height: 3px;
+    background: var(--accent1);
+    margin: 8px auto 0;
+    border-radius: 2px;
+    position: relative;
+  }
+  .title-underline::after {
+    content: '';
+    position: absolute;
+    top: 5px; left: 20px;
+    width: 140px; height: 2px;
+    background: var(--accent4);
+    border-radius: 2px;
+  }
 
-  /* ── DECISION ── */
-  .diamond-box{width:190px;height:68px;position:relative;display:flex;align-items:center;justify-content:center;}
-  .diamond-box svg{position:absolute;top:0;left:0;width:100%;height:100%;overflow:visible;}
-  .d-lbl{position:relative;z-index:1;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;color:var(--orange);text-align:center;line-height:1.3;}
+  /* ──────────────────────────────── */
+  .flow {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
 
-  .err-bubble{align-self:flex-end;margin-right:4px;border:2px dashed var(--red);border-radius:8px;background:#fff5f5;padding:7px 10px;font-size:11.5px;color:var(--red);max-width:180px;}
-  .err-bubble strong{display:block;font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;font-weight:700;margin-bottom:2px;}
+  /* ── NODE ── */
+  .node {
+    position: relative;
+    animation: pop .4s cubic-bezier(.34,1.56,.64,1) both;
+  }
 
-  .conn-col{display:flex;flex-direction:column;align-items:center;}
+  @keyframes pop {
+    from { opacity:0; transform: scale(.7) rotate(-3deg); }
+    to   { opacity:1; transform: scale(1) rotate(0deg); }
+  }
 
-  .quota-warn{border:2px dashed #f59e0b;border-radius:8px;background:#fffbeb;padding:9px 11px;font-size:11.5px;color:#92400e;width:100%;margin-top:12px;}
-  .quota-warn strong{font-family:'Plus Jakarta Sans',sans-serif;font-size:12px;display:block;margin-bottom:2px;}
+  .node:nth-child(1)  { animation-delay: .1s }
+  .node:nth-child(3)  { animation-delay: .25s }
+  .node:nth-child(5)  { animation-delay: .40s }
+  .node:nth-child(7)  { animation-delay: .55s }
+  .node:nth-child(9)  { animation-delay: .70s }
+  .node:nth-child(11) { animation-delay: .85s }
 
-  @keyframes pop{from{opacity:0;transform:scale(.75) rotate(-2deg);}to{opacity:1;transform:scale(1) rotate(0deg);}}
-  .d1{animation-delay:.08s}.d2{animation-delay:.18s}.d3{animation-delay:.28s}
-  .d4{animation-delay:.38s}.d5{animation-delay:.48s}.d6{animation-delay:.58s}
-  .d7{animation-delay:.68s}
+  .box {
+    border: 2.5px solid var(--ink);
+    border-radius: 8px;
+    padding: 14px 24px;
+    min-width: 320px;
+    max-width: 560px;
+    background: white;
+    position: relative;
+    cursor: default;
+    transition: transform .2s, box-shadow .2s;
+  }
+
+  .box:hover {
+    transform: translateY(-2px) rotate(.4deg);
+    box-shadow: 4px 6px 0 var(--ink);
+  }
+
+  /* Sketchy shadow */
+  .box::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 8px;
+    border: 2px solid var(--ink);
+    transform: translate(4px, 4px);
+    z-index: -1;
+    opacity: .18;
+  }
+
+  /* Color stripe */
+  .box .stripe {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 6px;
+    border-radius: 6px 0 0 6px;
+  }
+
+  .box-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+  }
+
+  .icon {
+    font-size: 26px;
+    line-height: 1;
+    flex-shrink: 0;
+  }
+
+  .box-title {
+    font-family: 'Kalam', cursive;
+    font-size: 19px;
+    font-weight: 700;
+    color: var(--ink);
+  }
+
+  .box-body {
+    font-size: 15px;
+    color: #444;
+    line-height: 1.5;
+    padding-left: 36px;
+  }
+
+  .box-body li {
+    list-style: none;
+    position: relative;
+    padding-left: 18px;
+  }
+  .box-body li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: #888;
+  }
+
+  /* Color themes */
+  .theme-blue   .stripe { background: var(--accent1); }
+  .theme-blue   { border-color: var(--accent1); }
+  .theme-blue   .box-title { color: var(--accent1); }
+
+  .theme-green  .stripe { background: var(--accent2); }
+  .theme-green  { border-color: var(--accent2); }
+  .theme-green  .box-title { color: var(--accent2); }
+
+  .theme-orange .stripe { background: var(--accent4); }
+  .theme-orange { border-color: var(--accent4); }
+  .theme-orange .box-title { color: var(--accent4); }
+
+  .theme-red    .stripe { background: var(--accent3); }
+  .theme-red    { border-color: var(--accent3); }
+  .theme-red    .box-title { color: var(--accent3); }
+
+  .theme-purple .stripe { background: var(--accent5); }
+  .theme-purple { border-color: var(--accent5); }
+  .theme-purple .box-title { color: var(--accent5); }
+
+  .theme-dark   .stripe { background: var(--ink); }
+  .theme-dark   { border-color: var(--ink); }
+  .theme-dark   .box-title { color: var(--ink); }
+
+  /* ── ARROW ── */
+  .arrow-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 56px;
+    position: relative;
+    animation: fadeIn .3s ease both;
+  }
+
+  @keyframes fadeIn { from{opacity:0} to{opacity:1} }
+
+  .arrow-wrap:nth-child(2)  { animation-delay: .17s }
+  .arrow-wrap:nth-child(4)  { animation-delay: .32s }
+  .arrow-wrap:nth-child(6)  { animation-delay: .47s }
+  .arrow-wrap:nth-child(8)  { animation-delay: .62s }
+  .arrow-wrap:nth-child(10) { animation-delay: .77s }
+
+  .arrow-line {
+    width: 2.5px;
+    flex: 1;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--line) 0, var(--line) 7px,
+      transparent 7px, transparent 12px
+    );
+  }
+
+  .arrow-label {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: calc(50% + 14px);
+    font-size: 13px;
+    color: #666;
+    white-space: nowrap;
+    background: var(--paper);
+    padding: 1px 4px;
+    border-radius: 3px;
+    border: 1px dashed #bbb;
+  }
+
+  .arrowhead {
+    width: 0; height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-top: 11px solid var(--line);
+  }
+
+  /* ── BRANCH ── */
+  .branch {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    margin: 0;
+    position: relative;
+    z-index: 1;
+    animation: pop .4s .55s cubic-bezier(.34,1.56,.64,1) both;
+  }
+
+  .branch-connector {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1;
+    animation: fadeIn .3s .47s ease both;
+  }
+
+  .branch-connector svg {
+    width: 340px;
+    height: 44px;
+    overflow: visible;
+  }
+
+  /* ── BADGE ── */
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-family: 'Kalam', cursive;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-bottom: 4px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+  }
+
+  .badge-auto { background:#dbeafe; color:#1d4ed8; border:1px solid #93c5fd; }
+  .badge-manual { background:#fef3c7; color:#92400e; border:1px solid #fcd34d; }
+  .badge-output { background:#dcfce7; color:#166534; border:1px solid #86efac; }
 
   /* ── LEGEND ── */
-  .legend{margin-top:36px;border-top:2px dashed #ccc;padding-top:18px;position:relative;z-index:1;}
-  .legend-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:14px;font-weight:600;color:#666;margin-bottom:8px;}
-  .legend-items{display:flex;gap:16px;flex-wrap:wrap;}
-  .legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:#555;}
-  .ldot{width:13px;height:13px;border-radius:3px;border:2px solid;}
+  .legend {
+    margin-top: 40px;
+    border-top: 2px dashed #ccc;
+    padding-top: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .legend-title {
+    font-family: 'Kalam', cursive;
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 10px;
+  }
+
+  .legend-items {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 13px;
+    color: #555;
+  }
+
+  .legend-dot {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    border: 2px solid;
+  }
+
+  /* ── STAMP ── */
+  .stamp {
+    position: absolute;
+    top: 44px; right: 52px;
+    width: 90px; height: 90px;
+    border: 3px solid rgba(220,38,38,.5);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transform: rotate(12deg);
+    color: rgba(220,38,38,.5);
+    font-family: 'Kalam', cursive;
+    font-size: 10px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: .5px;
+    line-height: 1.3;
+    text-transform: uppercase;
+    pointer-events: none;
+  }
+
+  .stamp::before {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    border: 1.5px solid rgba(220,38,38,.3);
+    border-radius: 50%;
+  }
 </style>
 </head>
 <body>
+<div class="page">
 
-  <!-- ZOOM CONTROL -->
-  <div class="zoom-ctrl">
-    <button onclick="adjustZoom(-10)">−</button>
-    <div class="z-sep"></div>
-    <span class="z-val" id="zoomVal">100%</span>
-    <div class="z-sep"></div>
-    <button onclick="adjustZoom(+10)">+</button>
+  <div class="stamp">Microsoft<br>365<br>✦ Auto ✦</div>
+
+  <div class="title">
+    <h1>📋 Fluxo de Solicitação de Serviço</h1>
+    <p>Microsoft Forms → Excel → Ordem de Serviço</p>
+    <div class="title-underline"></div>
   </div>
-  <script>
-    var z = 100;
-    function adjustZoom(d) {
-      z = Math.min(200, Math.max(25, z + d));
-      document.getElementById('zoomVal').textContent = z + '%';
-      document.body.style.zoom = z + '%';
-    }
-  </script>
 
-  <div class="page">
-    <div class="stamp">CEVA<br>&amp;<br>Logitech<br>✦ v2 ✦</div>
+  <div class="flow">
 
-    <div class="title">
-      <h1>🤖 Fluxograma – Aplicativo Chatbot Interno</h1>
-      <p>Usuário · IA (Gemini API) · Base de Conhecimento Supabase · Painel Administrativo</p>
-      <div class="tline"></div>
-    </div>
-
-    <!-- ══ INFRA ══ -->
-    <div class="infra-grid">
-
-      <!-- SUPABASE CARD – collapsible -->
-      <div class="supa-card" id="supaCard" onclick="toggleSupa()" style="cursor:pointer;transition:box-shadow .2s;">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="font-size:22px;">🗄️</span>
-            <div>
-              <span class="badge b-db">Banco de Dados</span><br>
-              <span class="supa-title">Supabase – Backend &amp; Storage</span>
-            </div>
-          </div>
-          <span id="supaChevron" style="font-size:14px;color:#059669;transition:transform .3s;flex-shrink:0;">▼</span>
+    <!-- 1. Formulário -->
+    <div class="node">
+      <div class="box theme-blue">
+        <div class="stripe"></div>
+        <div class="badge badge-auto">Entrada</div>
+        <div class="box-header">
+          <span class="icon">📝</span>
+          <span class="box-title">Microsoft Forms</span>
         </div>
-
-        <div class="supa-row">
-          <div class="supa-item"><strong>📚 Base de Conhecimento</strong>Instruções de trabalho por setor</div>
-          <div class="supa-item"><strong>📜 Histórico de Acessos</strong>Login, data, hora, usuário</div>
-          <div class="supa-item"><strong>❓ Dúvidas Frequentes</strong>Perguntas + frequência registrada</div>
-          <div class="supa-item"><strong>🔢 Contador de Acessos</strong>Qtd. diária/mensal por usuário</div>
-        </div>
-
-        <div id="supaExtra" style="max-height:0;overflow:hidden;transition:max-height .45s ease;">
-          <div style="padding-top:10px;">
-            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">
-              <span style="display:inline-flex;align-items:center;gap:4px;background:#d1fae5;border:1px solid #6ee7b7;color:#065f46;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:5px;">🔌 Conexão via API REST</span>
-              <span style="display:inline-flex;align-items:center;gap:4px;background:#bbf7d0;border:1px solid #6ee7b7;color:#14532d;font-size:10.5px;font-weight:600;padding:2px 8px;border-radius:5px;">🔒 API segura — chave pública no front</span>
-            </div>
-            <div style="font-size:11.5px;color:#047857;background:#d1fae5;border:1px solid #6ee7b7;border-radius:6px;padding:6px 10px;margin-bottom:8px;line-height:1.4;">
-              🛠️ <strong style="font-family:'Plus Jakarta Sans',sans-serif;">Banco administrado pela equipe BPE</strong> — responsável por tabelas, políticas de acesso e estrutura de dados.
-            </div>
-            <div class="sec-block">
-              <div class="sec-block-title">🛡️ Segurança &amp; Controle de Acesso <span class="rls-badge">RLS ATIVO</span></div>
-              <ul>
-                <li>RLS (Row Level Security) ativado em todas as tabelas</li>
-                <li>Políticas CRUD bem definidas por perfil de usuário</li>
-                <li>Acesso às tabelas somente com usuário e senha cadastrados usando domínio <strong>@cevalogistics.com</strong></li>
-                <li>Usar apenas a <code style="background:#d1fae5;padding:0 4px;border-radius:3px;font-size:10.5px;font-family:monospace;">anon public key</code> no front-end — chaves sensíveis ficam no back-end</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- GEMINI CARD -->
-      <div class="gem-card">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-          <span style="font-size:22px;">✨</span>
-          <div>
-            <span class="badge b-ai">Motor de IA</span><br>
-            <span class="gem-title">Google Gemini API – gemini-2.5-flash</span>
-          </div>
-        </div>
-        <div class="gem-url">https://generativelanguage.googleapis.com/v1/models/<br>gemini-2.5-flash:generateContent</div>
-        <ul style="font-size:12px;color:#374151;padding-left:0;margin-top:6px;">
-          <li style="list-style:none;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">→</span>Recebe a pergunta + contexto buscado no Supabase</li>
-          <li style="list-style:none;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">→</span>Gera resposta contextualizada e objetiva</li>
-          <li style="list-style:none;padding-left:16px;position:relative;"><span style="position:absolute;left:0;">→</span>API Key armazenada com segurança no back-end</li>
+        <ul class="box-body">
+          <li>Cliente/colaborador preenche o formulário online</li>
+          <li>Campos: nome, tipo de serviço, descrição, urgência</li>
+          <li>Disponível em qualquer dispositivo, 24h</li>
         </ul>
-        <div class="gem-warn">⚠️ Cota diária de requisições — monitorar limite de uso. Ao atingir a cota, novas perguntas ficam bloqueadas até reset.</div>
+      </div>
+    </div>
+
+    <!-- Seta 1 -->
+    <div class="arrow-wrap">
+      <div class="arrow-line"></div>
+      <span class="arrow-label">✦ automático</span>
+      <div class="arrowhead"></div>
+    </div>
+
+    <!-- 2. Respostas -->
+    <div class="node">
+      <div class="box theme-green">
+        <div class="stripe"></div>
+        <div class="badge badge-auto">Sincronização Automática</div>
+        <div class="box-header">
+          <span class="icon">📊</span>
+          <span class="box-title">Excel · Aba "Respostas"</span>
+        </div>
+        <ul class="box-body">
+          <li>Cada envio cria uma nova linha na planilha</li>
+          <li>Data/hora, nome, serviço e todos os campos gravados</li>
+          <li>Arquivo salvo no SharePoint / OneDrive</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Seta 2 -->
+    <div class="arrow-wrap">
+      <div class="arrow-line"></div>
+      <span class="arrow-label">fórmulas</span>
+      <div class="arrowhead"></div>
+    </div>
+
+    <!-- 3. Aba OS -->
+    <div class="node">
+      <div class="box theme-orange">
+        <div class="stripe"></div>
+        <div class="badge badge-auto">Processamento</div>
+        <div class="box-header">
+          <span class="icon">⚙️</span>
+          <span class="box-title">Excel · Aba "Ordem de Serviço"</span>
+        </div>
+        <ul class="box-body">
+          <li>Puxa dados da aba de Respostas via PROCV / ÍNDICE</li>
+          <li>Formata no layout padrão da OS</li>
+          <li>Numeração automática, datas e responsável</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Seta 3 -->
+    <div class="arrow-wrap">
+      <div class="arrow-line"></div>
+      <span class="arrow-label">gera saída</span>
+      <div class="arrowhead"></div>
+    </div>
+
+    <!-- 4. Branch -->
+    <div class="branch-connector">
+      <svg viewBox="0 0 340 44">
+        <!-- linha central desce -->
+        <line x1="170" y1="0" x2="170" y2="14" stroke="#374151" stroke-width="2.5" stroke-dasharray="6,4"/>
+        <!-- braço esquerdo -->
+        <line x1="170" y1="14" x2="60"  y2="14" stroke="#374151" stroke-width="2.5"/>
+        <line x1="60"  y1="14" x2="60"  y2="44" stroke="#374151" stroke-width="2.5" stroke-dasharray="6,4"/>
+        <!-- braço direito -->
+        <line x1="170" y1="14" x2="280" y2="14" stroke="#374151" stroke-width="2.5"/>
+        <line x1="280" y1="14" x2="280" y2="44" stroke="#374151" stroke-width="2.5" stroke-dasharray="6,4"/>
+        <!-- seta esquerda -->
+        <polygon points="53,40 60,52 67,40" fill="#374151"/>
+        <!-- seta direita -->
+        <polygon points="273,40 280,52 287,40" fill="#374151"/>
+      </svg>
+    </div>
+
+    <div class="branch">
+
+      <!-- Relatório -->
+      <div class="node">
+        <div class="box theme-red" style="min-width:220px;max-width:260px;">
+          <div class="stripe"></div>
+          <div class="badge badge-output">Saída</div>
+          <div class="box-header">
+            <span class="icon">🖨️</span>
+            <span class="box-title">Relatório / Impressão</span>
+          </div>
+          <ul class="box-body" style="padding-left:0">
+            <li>Layout formatado para impressão</li>
+            <li>Exportar como PDF</li>
+            <li>Envio por e-mail</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Dashboard -->
+      <div class="node">
+        <div class="box theme-purple" style="min-width:220px;max-width:260px;">
+          <div class="stripe"></div>
+          <div class="badge badge-output">Saída</div>
+          <div class="box-header">
+            <span class="icon">📈</span>
+            <span class="box-title">Painel / Dashboard</span>
+          </div>
+          <ul class="box-body" style="padding-left:0">
+            <li>Gráficos e indicadores</li>
+            <li>Filtros por período e tipo</li>
+            <li>Atualização em tempo real</li>
+          </ul>
+        </div>
       </div>
 
     </div>
 
-    <script>
-      function toggleSupa() {
-        var extra = document.getElementById('supaExtra');
-        var chevron = document.getElementById('supaChevron');
-        var open = extra.style.maxHeight && extra.style.maxHeight !== '0px';
-        if (open) {
-          extra.style.maxHeight = '0px';
-          chevron.style.transform = 'rotate(0deg)';
-        } else {
-          extra.style.maxHeight = (extra.scrollHeight + 20) + 'px';
-          chevron.style.transform = 'rotate(180deg)';
-        }
-      }
-    </script>
+  </div><!-- /flow -->
 
-    <!-- ══ THREE LANES ══ -->
-    <div class="main-grid">
-
-      <!-- LANE 1 – USUÁRIO -->
-      <div>
-        <div class="col-label user">👤 Fluxo do Usuário</div>
-        <div class="lane">
-
-          <div class="box c-blue d1">
-            <div class="stripe"></div><span class="badge b-auth">Início</span>
-            <div class="box-header"><span class="icon">🌐</span><span class="bttl">Abre o App</span></div>
-            <ul class="bbody"><li>Navegador ou app mobile</li><li>Tela de login exibida</li></ul>
-          </div>
-
-          <div class="arr d2"><div class="arr-line"></div><div class="arr-head"></div></div>
-
-          <div class="box c-blue d2">
-            <div class="stripe"></div><span class="badge b-auth">Autenticação</span>
-            <div class="box-header"><span class="icon">🔐</span><span class="bttl">Login – Usuário &amp; Senha</span></div>
-            <ul class="bbody"><li>Insere credenciais</li><li>App valida via Supabase Auth</li></ul>
-          </div>
-
-          <div class="arr d3"><div class="arr-line"></div><span class="arr-lbl">valida</span><div class="arr-head"></div></div>
-
-          <div style="width:100%;display:flex;flex-direction:column;align-items:center;">
-            <div class="diamond-box">
-              <svg viewBox="0 0 190 68"><polygon points="95,2 188,34 95,66 2,34" fill="white" stroke="#d97706" stroke-width="2.5"/></svg>
-              <div class="d-lbl">Credenciais<br>válidas?</div>
-            </div>
-          </div>
-
-          <div style="width:100%;display:flex;justify-content:flex-end;margin:5px 0;">
-            <div class="err-bubble">
-              <strong>✕ Acesso Negado</strong>
-              Exibe erro. 3 tentativas → conta bloqueada.
-            </div>
-          </div>
-
-          <div class="arr d4"><div class="arr-line"></div><span class="arr-lbl">✔ sim</span><div class="arr-head"></div></div>
-
-          <div class="box c-green d4">
-            <div class="stripe"></div><span class="badge b-out">Interface</span>
-            <div class="box-header"><span class="icon">💬</span><span class="bttl">Tela de Chat</span></div>
-            <ul class="bbody">
-              <li>Sugestões rápidas na sidebar</li>
-              <li>Campo de mensagem + Enviar</li>
-              <li>Histórico da conversa</li>
-            </ul>
-          </div>
-
-          <div class="arr d5"><div class="arr-line"></div><span class="arr-lbl">digita</span><div class="arr-head"></div></div>
-
-          <div class="box c-orange d5">
-            <div class="stripe"></div><span class="badge b-proc">Entrada</span>
-            <div class="box-header"><span class="icon">✍️</span><span class="bttl">Faz Pergunta</span></div>
-            <ul class="bbody">
-              <li>Dúvida sobre processo de trabalho</li>
-              <li>Ex: "Prazo padrão inbound?"</li>
-            </ul>
-          </div>
-
-          <div class="arr d6"><div class="arr-line"></div><span class="arr-lbl">recebe</span><div class="arr-head"></div></div>
-
-          <div class="box c-green d6">
-            <div class="stripe"></div><span class="badge b-out">Saída</span>
-            <div class="box-header"><span class="icon">📩</span><span class="bttl">Resposta Exibida</span></div>
-            <ul class="bbody">
-              <li>Texto claro e formatado</li>
-              <li>Loop: nova pergunta → passo anterior</li>
-              <li>Exportar / Limpar / Sair</li>
-            </ul>
-          </div>
-
-        </div>
+  <div class="legend">
+    <div class="legend-title">✏️ Legenda</div>
+    <div class="legend-items">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#dbeafe;border-color:#2563eb"></div>
+        Entrada do usuário
       </div>
-
-      <!-- CONNECTOR 1→2 -->
-      <div class="conn-col">
-        <svg width="52" height="300" style="overflow:visible;margin-top:140px;">
-          <line x1="2" y1="50" x2="44" y2="50" stroke="#7c3aed" stroke-width="2" stroke-dasharray="5,3"/>
-          <polygon points="38,45 50,50 38,55" fill="#7c3aed"/>
-          <text x="3" y="44" font-size="9" fill="#7c3aed" font-family="DM Sans">pergunta</text>
-          <line x1="44" y1="100" x2="2" y2="100" stroke="#16a34a" stroke-width="2" stroke-dasharray="5,3"/>
-          <polygon points="8,95 -4,100 8,105" fill="#16a34a"/>
-          <text x="3" y="94" font-size="9" fill="#16a34a" font-family="DM Sans">resposta</text>
-        </svg>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#dcfce7;border-color:#16a34a"></div>
+        Sincronização automática
       </div>
-
-      <!-- LANE 2 – IA -->
-      <div>
-        <div class="col-label ai">🧠 Fluxo da IA / Sistema</div>
-        <div class="lane">
-
-          <div class="box c-supa d2" style="margin-top:140px;">
-            <div class="stripe"></div><span class="badge b-db">Supabase Auth</span>
-            <div class="box-header"><span class="icon">🔑</span><span class="bttl">Valida Login</span></div>
-            <ul class="bbody">
-              <li>Consulta tabela de usuários</li>
-              <li>Verifica domínio @cevalogistics.com</li>
-              <li>Registra acesso + timestamp</li>
-              <li>Incrementa contador de acessos</li>
-            </ul>
-          </div>
-
-          <div class="arr d4"><div class="arr-line"></div><div class="arr-head"></div></div>
-
-          <div class="box c-purple d5">
-            <div class="stripe"></div><span class="badge b-ai">Gemini API</span>
-            <div class="box-header"><span class="icon">✨</span><span class="bttl">Processa Pergunta</span></div>
-            <ul class="bbody">
-              <li>Busca contexto na Base (Supabase)</li>
-              <li>Monta prompt + instrução de trabalho</li>
-              <li>Envia para gemini-2.5-flash</li>
-              <li>Verifica cota diária disponível</li>
-            </ul>
-          </div>
-
-          <div class="arr d6"><div class="arr-line"></div><div class="arr-head"></div></div>
-
-          <div class="box c-supa d6">
-            <div class="stripe"></div><span class="badge b-db">Supabase</span>
-            <div class="box-header"><span class="icon">💾</span><span class="bttl">Grava no Histórico</span></div>
-            <ul class="bbody">
-              <li>Salva pergunta + resposta</li>
-              <li>Registra usuário, data, hora</li>
-              <li>Atualiza ranking de dúvidas frequentes</li>
-            </ul>
-          </div>
-
-          <div class="quota-warn">
-            <strong>⚠️ Cota Diária Gemini</strong>
-            Se limite atingido → exibe aviso ao usuário e bloqueia novas requisições até reset da cota.
-          </div>
-
-        </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#fef3c7;border-color:#d97706"></div>
+        Processamento / fórmulas
       </div>
-
-      <!-- CONNECTOR 2→3 -->
-      <div class="conn-col">
-        <svg width="52" height="300" style="overflow:visible;margin-top:280px;">
-          <line x1="2" y1="60" x2="44" y2="60" stroke="#b45309" stroke-width="2" stroke-dasharray="5,3"/>
-          <polygon points="38,55 50,60 38,65" fill="#b45309"/>
-          <text x="1" y="54" font-size="9" fill="#b45309" font-family="DM Sans">dados</text>
-        </svg>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#fee2e2;border-color:#dc2626"></div>
+        Saída impressa / PDF
       </div>
-
-      <!-- LANE 3 – ADMIN -->
-      <div>
-        <div class="col-label admin">🛠️ Fluxo do Administrador</div>
-        <div class="lane">
-
-          <div class="box c-admin d3" style="margin-top:220px;">
-            <div class="stripe"></div><span class="badge b-adm">Admin</span>
-            <div class="box-header"><span class="icon">🔒</span><span class="bttl">Login Administrativo</span></div>
-            <ul class="bbody">
-              <li>Perfil com privilégios de admin</li>
-              <li>Acesso ao painel de gestão</li>
-            </ul>
-          </div>
-
-          <div class="arr d5"><div class="arr-line"></div><div class="arr-head"></div></div>
-
-          <div class="box c-admin d5">
-            <div class="stripe"></div><span class="badge b-adm">Dashboard</span>
-            <div class="box-header"><span class="icon">📊</span><span class="bttl">Painel Administrativo</span></div>
-            <ul class="bbody">
-              <li>Histórico de acessos por usuário/data</li>
-              <li>Total de perguntas realizadas</li>
-              <li>Ranking das dúvidas mais frequentes</li>
-              <li>Consumo da cota Gemini (diário/mensal)</li>
-            </ul>
-          </div>
-
-          <div class="arr d6"><div class="arr-line"></div><span class="arr-lbl">gera</span><div class="arr-head"></div></div>
-
-          <div class="box d6" style="border-color:var(--admin);">
-            <div class="stripe" style="background:var(--admin);"></div>
-            <span class="badge b-adm">Análise</span>
-            <div class="box-header"><span class="icon">📈</span><span class="bttl" style="color:var(--admin);">Gráfico de Pareto</span></div>
-            <ul class="bbody">
-              <li>80% das dúvidas em 20% dos temas</li>
-              <li>Identifica onde agir com treinamentos</li>
-              <li>Exporta relatório PDF/Excel</li>
-            </ul>
-            <div style="display:flex;align-items:flex-end;gap:3px;height:34px;margin-top:8px;padding-left:28px;">
-              <div style="width:20px;height:34px;background:var(--admin);border-radius:3px 3px 0 0;opacity:.85;"></div>
-              <div style="width:20px;height:26px;background:var(--admin);border-radius:3px 3px 0 0;opacity:.7;"></div>
-              <div style="width:20px;height:18px;background:var(--admin);border-radius:3px 3px 0 0;opacity:.55;"></div>
-              <div style="width:20px;height:12px;background:var(--admin);border-radius:3px 3px 0 0;opacity:.4;"></div>
-              <div style="width:20px;height:6px; background:var(--admin);border-radius:3px 3px 0 0;opacity:.28;"></div>
-              <svg width="56" height="34" style="margin-left:3px;overflow:visible;">
-                <polyline points="0,28 12,18 24,12 36,8 48,6" stroke="#f59e0b" stroke-width="2" fill="none"/>
-                <circle cx="0" cy="28" r="2.5" fill="#f59e0b"/>
-                <circle cx="12" cy="18" r="2.5" fill="#f59e0b"/>
-                <circle cx="24" cy="12" r="2.5" fill="#f59e0b"/>
-                <circle cx="36" cy="8"  r="2.5" fill="#f59e0b"/>
-                <circle cx="48" cy="6"  r="2.5" fill="#f59e0b"/>
-              </svg>
-            </div>
-          </div>
-
-          <div class="arr d7"><div class="arr-line"></div><div class="arr-head"></div></div>
-
-          <div class="box c-green d7">
-            <div class="stripe"></div><span class="badge b-out">Resultado</span>
-            <div class="box-header"><span class="icon">🎯</span><span class="bttl">Plano de Ação</span></div>
-            <ul class="bbody">
-              <li>Treinamentos focados nos gaps</li>
-              <li>Atualiza base de conhecimento</li>
-              <li>Melhoria contínua do processo</li>
-            </ul>
-          </div>
-
-        </div>
-      </div>
-
-    </div><!-- /main-grid -->
-
-    <!-- LEGEND -->
-    <div class="legend">
-      <div class="legend-title">✏️ Legenda</div>
-      <div class="legend-items">
-        <div class="legend-item"><div class="ldot" style="background:#dbeafe;border-color:#2563eb;"></div>Autenticação / Usuário</div>
-        <div class="legend-item"><div class="ldot" style="background:#dcfce7;border-color:#16a34a;"></div>Interface / Saída</div>
-        <div class="legend-item"><div class="ldot" style="background:#fef3c7;border-color:#d97706;"></div>Entrada / Processamento</div>
-        <div class="legend-item"><div class="ldot" style="background:#ede9fe;border-color:#7c3aed;"></div>Gemini IA</div>
-        <div class="legend-item"><div class="ldot" style="background:#d1fae5;border-color:#3ecf8e;"></div>Supabase (BD)</div>
-        <div class="legend-item"><div class="ldot" style="background:#fef3c7;border-color:#b45309;"></div>Administrador / BPE</div>
-        <div class="legend-item"><div class="ldot" style="background:#fee2e2;border-color:#dc2626;"></div>Erro / Alerta</div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#ede9fe;border-color:#7c3aed"></div>
+        Painel de gestão
       </div>
     </div>
+  </div>
 
-  </div><!-- /page -->
+</div>
 </body>
 </html>
